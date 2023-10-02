@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- devtools::build_readme() -->
 
-# fluvgeoapi
+# fluvgeoapi <a href="https://fluvialgeomorph.github.io/fluvgeoapi/"><img src="man/figures/logo.png" align="right" height="139" alt="fluvgeoapi website" /></a>
 
 <!-- badges: start -->
 
