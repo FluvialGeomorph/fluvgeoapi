@@ -3,7 +3,7 @@ test_that("check RHG", {
     # ------------- Start plumber API -------------------
     local_api <- call_that_plumber_start(
       api_folder = system.file("plumber", package = "fluvgeoapi"),
-      api_file = "entrypoint.R")
+      api_file = "plumber.R")
 
     # ------------- Start test session ------------------
     api_session <- call_that_session_start(local_api)
