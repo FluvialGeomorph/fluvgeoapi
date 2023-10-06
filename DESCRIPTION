@@ -23,5 +23,5 @@ Language: en-US
 Imports:
     magrittr
 Remotes:
-    FluvialGeomorph/RegionalCurve@*release
+    FluvialGeomorph/RegionalCurve@*release,
     edgarruiz/callthat
