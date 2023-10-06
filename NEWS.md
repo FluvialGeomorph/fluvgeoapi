@@ -1,3 +1,4 @@
-1# fluvgeoapi (development version)
+# fluvgeoapi v2023.10.1
 
-* Initial CRAN submission.
+## Major changes
+* Added the GET RHG function
