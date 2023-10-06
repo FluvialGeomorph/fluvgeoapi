@@ -22,3 +22,5 @@ Imports:
     magrittr,
     plumber,
     RegionalCurve
+Remotes:
+    FluvialGeomorph/RegionalCurve@*release
