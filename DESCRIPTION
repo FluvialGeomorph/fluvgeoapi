@@ -7,7 +7,10 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: CC0
 Suggests: 
+    callthat,
     httr,
+    plumber,
+    RegionalCurve,
     spelling,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -18,10 +21,7 @@ RoxygenNote: 7.2.3
 URL: https://fluvialgeomorph.github.io/fluvgeoapi/
 Language: en-US
 Imports:
-    callthat,
-    magrittr,
-    plumber,
-    RegionalCurve
+    magrittr
 Remotes:
     FluvialGeomorph/RegionalCurve@*release
     edgarruiz/callthat
