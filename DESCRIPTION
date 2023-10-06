@@ -10,7 +10,6 @@ Suggests:
     callthat,
     httr,
     plumber,
-    RegionalCurve,
     spelling,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -21,7 +20,13 @@ RoxygenNote: 7.2.3
 URL: https://fluvialgeomorph.github.io/fluvgeoapi/
 Language: en-US
 Imports:
-    magrittr
+    fluvgeo,
+    magrittr,
+    RegionalCurve
 Remotes:
+    FluvialGeomorph/fluvgeo@*release
     FluvialGeomorph/RegionalCurve@*release,
     edgararuiz/callthat
+Depends: 
+    R (>= 2.10)
+LazyData: true
