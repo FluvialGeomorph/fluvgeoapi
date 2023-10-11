@@ -1,4 +1,4 @@
-test_that("check RHG", {
+test_that("check slope_sinuosity", {
   expect_silent({
     # ------------- Start plumber API -------------------
     local_api <- call_that_plumber_start(
@@ -8,9 +8,10 @@ test_that("check RHG", {
     # ------------- Start test session ------------------
     api_session <- call_that_session_start(local_api)
   })
+
   expect_s3_class(
     # ---------------- Make API call --------------------
-    get_rhg <- call_that_api_get(
+    rhg <- call_that_api_get(
       api_session,
       endpoint = "RHG",
       query = list(region = "USA",
@@ -19,6 +20,10 @@ test_that("check RHG", {
     ),
     "response"
   )
+  # Get testing data
+  flowline_points_geojson <- geojsonsf::sf_geojson(
+    fluvgeoapi::flowline_points)
+
 
   # ---------- Run tests against response ---------------
   ## Test to confirm that the response was a success
