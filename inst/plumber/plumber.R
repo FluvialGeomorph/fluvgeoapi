@@ -1,6 +1,7 @@
 library(plumber)
 library(RegionalCurve)
 library(fluvgeo)
+library(geojsonsf)
 
 #* @apiTitle Get RHG
 #* @apiDescription Get Regional Hydraulic Geometry
@@ -13,7 +14,6 @@ function(region, drainage_area, dimension_type) {
                      drainageArea = as.numeric(drainage_area),
                      dimensionType = dimension_type)
 }
-
 
 #* @apiTitle Post slope_sinuosity
 #* @apiDescription Calculate Slope and Sinuosity
@@ -35,9 +35,20 @@ function(region, drainage_area, dimension_type) {
 #* @param vert_units       character; The vertical units. One of: "m" (meter),
 #*                         "ft" (foot), "us-ft" (us survey foot)
 #* @post /slope_sinuosity
-function(channel_features,
-         lead_n, lag_n, use_smoothing, loess_span, vert_units) {
-  fluvgeo::slope_sinuosity(channel_features,
-                           lead_n, lag_n,
-                           use_smoothing, loess_span, vert_units)
+function(channel_features, lead_n, lag_n,
+         use_smoothing, loess_span, vert_units) {
+  # Convert parameters
+  channel_features_sf = geojsonsf::geojson_sf(channel_features)
+
+  channel_features_ss = fluvgeo::slope_sinuosity(
+    channel_features = channel_features_sf,
+    lead_n =           as.numeric(lead_n),
+    lag_n =            as.numeric(lag_n),
+    use_smoothing =    use_smoothing,
+    loess_span =       as.numeric(loess_span),
+    vert_units =       vert_units
+  )
+
+  # Convert outputs
+  channel_features_geojson = geojsonsf::sf_geojson(channel_features_ss)
 }

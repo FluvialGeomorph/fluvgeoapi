@@ -9,33 +9,33 @@ test_that("check slope_sinuosity", {
     api_session <- call_that_session_start(local_api)
   })
 
+  # ---------- Get testing data ------------------------
+    flowline_points_geojson <- geojsonsf::sf_geojson(
+      fluvgeoapi::flowline_points)
+
+  # ---------- Run tests against response ---------------
   expect_s3_class(
-    # ---------------- Make API call --------------------
-    rhg <- call_that_api_get(
+    ## Make API call
+    slope_sinuosity <- call_that_api_get(
       api_session,
-      endpoint = "RHG",
-      query = list(region = "USA",
-                   drainage_area = 1,
-                   dimension_type = "area")
+      endpoint = "slope_sinuosity",
+      query = list(channel_features = flowline_points_geojson,
+                   lead_n = 1,
+                   lag_n = 1 ,
+                   use_smoothing = TRUE,
+                   loess_span = 0.05,
+                   vert_units = "ft")
     ),
     "response"
   )
-  # Get testing data
-  flowline_points_geojson <- geojsonsf::sf_geojson(
-    fluvgeoapi::flowline_points)
 
-
-  # ---------- Run tests against response ---------------
   ## Test to confirm that the response was a success
   expect_equal(
-    get_rhg$status_code,
+    slope_sinuosity$status_code,
     200
   )
   ## Test to confirm the output of the API is correct
-  expect_equal(
-    round(content(get_rhg)[[1]], 2),
-    0.95
-  )
+  expect_snapshot(slope_sinuosity)
 
   # ----- Close the session, and the plumber API --------
   expect_null(
