@@ -1,0 +1,38 @@
+Project fg {
+  database_type: 'PostgreSQL'
+  Note: '''
+    FluvialGeomorph database design.
+  '''
+}
+
+// Tables
+Table project {
+  project_id integer [pk]
+  project_name varchar(255)
+
+  Note: 'Stores top level data on a project.'
+}
+
+Table site {
+  site_id integer [pk]
+  site_name varchar(225)
+  project_id integer
+
+  Note: ' '
+}
+
+Table reach {
+  reach_id [pk]
+  reach_name varchar(255)
+  site_id integer
+}
+
+//Relationships
+
+Ref projects_have_many_sites {
+  project.project_id < site.project_id
+}
+
+Ref sites_have_many_reaches {
+  site.site_id < reach.site_id
+}
