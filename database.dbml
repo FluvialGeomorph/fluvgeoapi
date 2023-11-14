@@ -10,29 +10,108 @@ Table project {
   project_id integer [pk]
   project_name varchar(255)
 
-  Note: 'Stores top level data on a project.'
+  Note: '''
+  # Describes the areal extent of the project. Also referred to as the
+    study area.
+  ## Geometry: polygon
+  '''
 }
 
 Table site {
   site_id integer [pk]
   site_name varchar(225)
-  project_id integer
+  project_id integer [ref: < project.project_id]
 
-  Note: ' '
+  Note: '''
+  # Describes the areal extent of the site. Nests within project.
+  ## Geometry: polygon
+  '''
 }
 
 Table reach {
-  reach_id [pk]
+  reach_id integer [pk]
   reach_name varchar(255)
-  site_id integer
+  site_id integer [ref: < site.site_id]
+  survey_id integer [ref: < survey.survey_id]
+
+  Note: '''
+  # Describes the areal extent of the reach. Nests within site.
+  ## Geometry: polygon
+  '''
 }
 
-//Relationships
+Table survey {
+  survey_id integer [pk]
+  survey_name varchar(255)
+  site_id integer [ref: < reach.reach_id]
 
-Ref projects_have_many_sites {
-  project.project_id < site.project_id
+  Note: '''
+  # Describes the areal extent of the elevation surface survey.
+  ## Geometry: polygon
+  '''
 }
 
-Ref sites_have_many_reaches {
-  site.site_id < reach.site_id
+Table terrain_raster {
+  terrain_id integer [pk]
+  terrain_name varchar(255)
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+  # Derived raster terrain surface from a survey.
+  ## Geometry: raster
+  '''
+}
+
+Table cutlines {
+  cutline_id integer [pk]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+  # Represents lines needed to hydrologically modify a terrain model.
+  ## Geometry: polyline
+  '''
+}
+
+Table hydro_dem {
+  hydro_dem_id integer [pk]
+  hydro_dem_name varchar(255)
+  terrain_id integer [ref: - terrain_raster.terrain_id]
+
+  Note: '''
+  # Hydrologically modified terrain model.
+  ## Geometry: raster
+  '''
+}
+
+Table contributing_area {
+  contrib_area_id [pk]
+  contrib_area_name varchar(255)
+  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+
+  Note: '''
+  # Represents the specific catchment area for each pixel (in fc units).
+  ## Geometry: raster
+  '''
+}
+
+Table flow_accumulation {
+  fac_id integer [pk]
+  fac_name varchar(255)
+  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+
+  Note: '''
+  # Represents the number of upstream pixels.
+  ## Geometry: raster
+  '''
+}
+
+Table flow_direction {
+  fdr_id integer [pk]
+  fdr_name varchar(255)
+  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+
+  Note: '''
+  # Represents the direction of flow accross each pixel.
+  ## Geometry: raster
+  '''
 }
