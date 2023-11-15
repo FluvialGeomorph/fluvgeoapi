@@ -1,7 +1,7 @@
 Project fg {
   database_type: 'PostgreSQL'
   Note: '''
-    FluvialGeomorph database design.
+    # FluvialGeomorph database design.
   '''
 }
 
@@ -11,43 +11,48 @@ Table project {
   project_name varchar(255)
 
   Note: '''
-  # Describes the areal extent of the project. Also referred to as the
-    study area.
-  ## Geometry: polygon
+    # Describes the areal extent of the project.
+      Also referred to as the study area.
+    ## Geometry: polygon
   '''
 }
 
 Table site {
   site_id integer [pk]
   site_name varchar(225)
-  project_id integer [ref: < project.project_id]
+  project_id integer [ref: > project.project_id]
 
   Note: '''
-  # Describes the areal extent of the site. Nests within project.
-  ## Geometry: polygon
+    # Describes the areal extent of the site.
+      Nests within project.
+    ## Geometry: polygon
   '''
 }
 
 Table reach {
   reach_id integer [pk]
   reach_name varchar(255)
-  site_id integer [ref: < site.site_id]
-  survey_id integer [ref: < survey.survey_id]
+  site_id integer [ref: > site.site_id]
 
   Note: '''
-  # Describes the areal extent of the reach. Nests within site.
-  ## Geometry: polygon
+    # Describes the areal extent of the reach.
+      Nests within site.
+    ## Geometry: polygon
   '''
 }
 
 Table survey {
   survey_id integer [pk]
   survey_name varchar(255)
-  site_id integer [ref: < reach.reach_id]
+  reach_id integer [ref: > reach.reach_id]
+  survey_year integer
+  survey_month integer
+  survey_day integer
 
   Note: '''
-  # Describes the areal extent of the elevation surface survey.
-  ## Geometry: polygon
+    # Describes the areal extent of the elevation
+      surface survey.
+    ## Geometry: polygon
   '''
 }
 
@@ -57,8 +62,8 @@ Table terrain_raster {
   survey_id integer [ref: - survey.survey_id]
 
   Note: '''
-  # Derived raster terrain surface from a survey.
-  ## Geometry: raster
+    # Derived raster terrain surface from a survey.
+    ## Geometry: raster
   '''
 }
 
@@ -67,8 +72,9 @@ Table cutlines {
   survey_id integer [ref: - survey.survey_id]
 
   Note: '''
-  # Represents lines needed to hydrologically modify a terrain model.
-  ## Geometry: polyline
+    # Represents lines needed to hydrologically
+      modify a terrain model.
+    ## Geometry: polyline
   '''
 }
 
@@ -78,40 +84,112 @@ Table hydro_dem {
   terrain_id integer [ref: - terrain_raster.terrain_id]
 
   Note: '''
-  # Hydrologically modified terrain model.
-  ## Geometry: raster
+    # Hydrologically modified terrain model.
+    ## Geometry: raster
   '''
 }
 
 Table contributing_area {
   contrib_area_id [pk]
   contrib_area_name varchar(255)
-  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
 
   Note: '''
-  # Represents the specific catchment area for each pixel (in fc units).
-  ## Geometry: raster
+    # Represents the specific catchment area for each
+      pixel (in fc units).
+    ## Geometry: raster
+  '''
+}
+
+Table stream_network {
+  stream_network_id integer [pk]
+  contrib_area_id integer [ref: - contributing_area.contrib_area_id]
+  reach_name varchar(255)
+
+  Note: '''
+    # Represents the stream network of the study area.
+    ## Geometry: polyline
   '''
 }
 
 Table flow_accumulation {
   fac_id integer [pk]
   fac_name varchar(255)
-  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
 
   Note: '''
-  # Represents the number of upstream pixels.
-  ## Geometry: raster
+    # Represents the number of upstream pixels.
+    ## Geometry: raster
   '''
 }
 
 Table flow_direction {
   fdr_id integer [pk]
   fdr_name varchar(255)
-  hydro_dem_id integer [ref: - terrain_raster.terrain_id]
+  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
 
   Note: '''
-  # Represents the direction of flow accross each pixel.
-  ## Geometry: raster
+    # Represents the direction of flow accross each pixel.
+    ## Geometry: raster
+  '''
+}
+
+Table stream_network_points {
+  stream_network_points_id integer [pk]
+  stream_network_id integer [ref: - stream_network.stream_network_id]
+  reach_name varchar(255)
+  POINT_X double
+  POINT_Y double
+  POINT_M double
+  watershed_area_sqmi double
+  Z double
+
+  Note: '''
+    # Represents regularly spaced points along the stream
+      network.
+    ## Geometry: point
+  '''
+}
+
+Table gradient {
+  gradient_point_id [pk]
+  stream_network_points_id integer [ref: - stream_network_points.stream_network_points_id]
+
+  Note: '''
+    # Represents slope and sinuosity characteristic values for
+      stream_network_points.
+    ## Geometry: point
+  '''
+}
+
+Table watershed_points {
+  watershed_points_id integer [pk]
+  stream_network_points_id integer [ref: - stream_network_points.stream_network_points_id]
+
+  Note: '''
+    # Represents watershed characteristic values for
+      stream_network_points.
+    ## Geometry: point
+  '''
+}
+
+Table watershed {
+  watershed_id [pk]
+  reach_id integer [ref: - reach.reach_id]
+
+  Note: '''
+    # Represents the areal extent of the watershed.
+  '''
+}
+
+Table flowline {
+  flowline_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  reach_name integer [ref: - reach.reach_name]
+  from_measure double
+  to_measure double
+
+  Note: '''
+    #
   '''
 }
