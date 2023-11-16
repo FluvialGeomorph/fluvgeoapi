@@ -58,7 +58,7 @@ Table survey {
 
 Table terrain_raster {
   terrain_id integer [pk]
-  terrain_name varchar(255)
+  reach_id integer [ref: - reach.reach_id]
   survey_id integer [ref: - survey.survey_id]
 
   Note: '''
@@ -69,6 +69,7 @@ Table terrain_raster {
 
 Table cutlines {
   cutline_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
   survey_id integer [ref: - survey.survey_id]
 
   Note: '''
@@ -80,8 +81,8 @@ Table cutlines {
 
 Table hydro_dem {
   hydro_dem_id integer [pk]
-  hydro_dem_name varchar(255)
-  terrain_id integer [ref: - terrain_raster.terrain_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Hydrologically modified terrain model.
@@ -91,8 +92,8 @@ Table hydro_dem {
 
 Table contributing_area {
   contrib_area_id [pk]
-  contrib_area_name varchar(255)
-  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents the specific catchment area for each
@@ -103,8 +104,8 @@ Table contributing_area {
 
 Table stream_network {
   stream_network_id integer [pk]
-  contrib_area_id integer [ref: - contributing_area.contrib_area_id]
-  reach_name varchar(255)
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents the stream network of the study area.
@@ -114,8 +115,8 @@ Table stream_network {
 
 Table flow_accumulation {
   fac_id integer [pk]
-  fac_name varchar(255)
-  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents the number of upstream pixels.
@@ -125,8 +126,8 @@ Table flow_accumulation {
 
 Table flow_direction {
   fdr_id integer [pk]
-  fdr_name varchar(255)
-  hydro_dem_id integer [ref: - hydro_dem.hydro_dem_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents the direction of flow accross each pixel.
@@ -135,14 +136,9 @@ Table flow_direction {
 }
 
 Table stream_network_points {
-  stream_network_points_id integer [pk]
-  stream_network_id integer [ref: - stream_network.stream_network_id]
-  reach_name varchar(255)
-  POINT_X double
-  POINT_Y double
-  POINT_M double
-  watershed_area_sqmi double
-  Z double
+  sn_points_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents regularly spaced points along the stream
@@ -153,7 +149,8 @@ Table stream_network_points {
 
 Table gradient {
   gradient_point_id [pk]
-  stream_network_points_id integer [ref: - stream_network_points.stream_network_points_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents slope and sinuosity characteristic values for
@@ -164,7 +161,8 @@ Table gradient {
 
 Table watershed_points {
   watershed_points_id integer [pk]
-  stream_network_points_id integer [ref: - stream_network_points.stream_network_points_id]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
 
   Note: '''
     # Represents watershed characteristic values for
@@ -185,11 +183,228 @@ Table watershed {
 Table flowline {
   flowline_id integer [pk]
   reach_id integer [ref: - reach.reach_id]
-  reach_name integer [ref: - reach.reach_name]
-  from_measure double
-  to_measure double
+  survey_id integer [ref: - survey.survey_id]
+
 
   Note: '''
-    #
+    # Represents the flow path of a stream.
+    ## Geometry: polyline
   '''
+}
+
+Table flowline_points {
+  flowline_points_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents regularly spaced points along
+      a flowline.
+    ## Geometry: points
+  '''
+}
+
+Table detrend {
+  detrend_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents an elevation model with
+      downstream slope removed.
+    ## Geometry: raster
+  '''
+}
+
+Table channel_slope {
+  channel_slope_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents the slope of the hydro_dem.
+    ## Geometry: raster
+  '''
+}
+
+Table centerline {
+  centerline_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+  # Represents the center of the flow path.
+  ## Geometry: polyline
+  '''
+}
+
+Table cross_section {
+  cross_section_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents cross section lines drawn
+      perpendicular to the flowline.
+    ## Geometry: polyline
+  '''
+}
+
+Table dimensions_L1 {
+  l1_dims_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents cross section dimensions
+      at level 1.
+    ## Geometry: polyline
+  '''
+}
+
+Table dimensions_L2 {
+  l2_dims_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents cross section dimensions
+      at level 2.
+    ## Geometry: polyline
+  '''
+}
+
+Table dimensions_L3 {
+  l3_dims_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents cross section dimensions
+      at level 3.
+    ## Geometry: polyline
+  '''
+}
+
+Table bankfull_area {
+  bankfull_area_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents the channel area typically
+      inundated during bankfull events.
+    ## Geometry: polygon
+  '''
+}
+
+Table banklines {
+  banklines_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents the stream banks at bankfull.
+    ## Geometry: polyline
+  '''
+}
+
+Table bankline_points {
+  bankline_points_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents regularly spaced points along
+      the banklines.
+    ## Geometry: point
+  '''
+}
+
+Table features {
+  features_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents key stream features.
+    ## Geometry: point
+  '''
+}
+
+Table riffle {
+  riffle_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents riffle stream features.
+    ## Geometry: polyline
+  '''
+}
+
+Table valleyline {
+  valleyline_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents the trend line of the down-
+      valley axis.
+    ## Geometry: polyline
+  '''
+}
+
+Table loop_points {
+  loop_points_id integer [pk]
+  reach_id integer [ref: - reach.reach_id]
+  survey_id integer [ref: - survey.survey_id]
+
+  Note: '''
+    # Represents the key planform loop and
+      bend locations.
+    ## Geometry: polyline
+  '''
+}
+
+TableGroup project_dev {
+  project
+  site
+  reach
+  watershed
+}
+
+TableGroup create_terrain {
+  survey
+  terrain_raster
+  cutlines
+  hydro_dem
+  contributing_area
+  flow_accumulation
+  flow_direction
+  channel_slope
+}
+
+TableGroup level_1 {
+  flowline
+  flowline_points
+  detrend
+  centerline
+  cross_section
+  features
+  dimensions_L1
+}
+
+TableGroup level_2 {
+  bankfull_area
+  banklines
+  bankline_points
+  riffle
+  dimensions_L2
+}
+
+TableGroup level_3 {
+  valleyline
+  loop_points
+  dimensions_L3
 }
